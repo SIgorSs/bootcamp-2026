@@ -1,0 +1,123 @@
+<div class="aem-banner <?php echo $block->isAemLive() ? 'aem-banner--live' : 'aem-banner--fallback'; ?>">
+    <?php if ($block->hasBanner()): ?>
+        <?php $bannerContent = $block->getBannerContent(); ?>
+        
+        <div class="aem-banner__container">
+            <?php if ($bannerContent['image_url']): ?>
+                <div class="aem-banner__image">
+                    <img src="<?php echo $this->escapeUrl($bannerContent['image_url']); ?>"
+                         alt="<?php echo $this->escapeHtml($bannerContent['title']); ?>">
+                </div>
+            <?php endif; ?>
+            
+            <div class="aem-banner__content">
+                <h2 class="aem-banner__title">
+                    <?php echo $this->escapeHtml($bannerContent['title']); ?>
+                </h2>
+                
+                <p class="aem-banner__description">
+                    <?php echo $this->escapeHtml($bannerContent['description']); ?>
+                </p>
+                
+                <?php if ($bannerContent['cta_url'] && $bannerContent['cta_url'] !== '#'): ?>
+                    <a href="<?php echo $this->escapeUrl($bannerContent['cta_url']); ?>"
+                       class="aem-banner__cta">
+                        <?php echo $this->escapeHtml($bannerContent['cta_text']); ?>
+                    </a>
+                <?php endif; ?>
+            </div>
+            
+            <?php if (!$block->isAemLive()): ?>
+                <div class="aem-banner__warning">
+                    ⚠️ Conteúdo em modo fallback (AEM offline)
+                </div>
+            <?php endif; ?>
+        </div>
+    <?php endif; ?>
+</div>
+
+<style>
+    .aem-banner {
+        margin: 2rem 0;
+        padding: 2rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 8px;
+    }
+
+    .aem-banner__container {
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .aem-banner__image {
+        flex: 0 0 300px;
+    }
+
+    .aem-banner__image img {
+        width: 100%;
+        height: auto;
+        border-radius: 4px;
+    }
+
+    .aem-banner__content {
+        flex: 1;
+        min-width: 250px;
+    }
+
+    .aem-banner__title {
+        font-size: 1.8rem;
+        margin: 0 0 1rem 0;
+        font-weight: bold;
+    }
+
+    .aem-banner__description {
+        font-size: 1rem;
+        margin: 0 0 1.5rem 0;
+        line-height: 1.6;
+    }
+
+    .aem-banner__cta {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background: white;
+        color: #667eea;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+
+    .aem-banner__cta:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .aem-banner__warning {
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+        margin-top: 1rem;
+    }
+
+    .aem-banner--fallback {
+        opacity: 0.9;
+    }
+
+    @media (max-width: 768px) {
+        .aem-banner__container {
+            flex-direction: column;
+        }
+
+        .aem-banner__image {
+            flex: 0 0 100%;
+        }
+
+        .aem-banner__title {
+            font-size: 1.5rem;
+        }
+    }
+</style>

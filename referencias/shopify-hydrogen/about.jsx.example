@@ -1,0 +1,269 @@
+/**
+ * Rota: /about
+ * Página com conteúdo do AEM (integração)
+ */
+
+import {useQuery} from '@shopify/hydrogen';
+
+export async function loader(context) {
+  try {
+    const aemUrl = context.queryShop.aemAuthorUrl || 'http://localhost:4502';
+    const aemUsername = context.queryShop.aemUsername || 'admin';
+    const aemPassword = context.queryShop.aemPassword || 'admin';
+
+    // Autenticação Basic
+    const auth = btoa(`${aemUsername}:${aemPassword}`);
+
+    // Query GraphQL para AEM
+    const query = `
+      {
+        produtoDestaqueList(filter: { destaque: { _expressions: [{ value: true }] } }) {
+          items {
+            titulo
+            descricao {
+              plaintext
+            }
+            preco
+            categoria
+            stackTecnologico
+            destaque
+            imagem {
+              _path
+            }
+            linkExterno
+          }
+        }
+      }
+    `;
+
+    const response = await fetch(`${aemUrl}/content/graphql/global`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${auth}`,
+      },
+      body: JSON.stringify({ query }),
+    });
+
+    if (!response.ok) {
+      throw new Error('AEM offline');
+    }
+
+    const data = await response.json();
+
+    return {
+      products: data.data?.produtoDestaqueList?.items || [],
+      source: 'aem-live',
+    };
+  } catch (error) {
+    console.error('Erro ao buscar conteúdo do AEM:', error);
+
+    // Fallback: conteúdo estático
+    return {
+      products: [
+        {
+          titulo: 'Camiseta Bootcamp 2026',
+          descricao: { plaintext: 'Camiseta oficial com logo' },
+          preco: 89.9,
+          categoria: 'Vestuário',
+          stackTecnologico: 'React',
+          destaque: true,
+          linkExterno: '#',
+        },
+      ],
+      source: 'aem-static',
+      error: 'AEM offline, usando cache',
+    };
+  }
+}
+
+export default function About({products, source, error}) {
+  return (
+    <div className="about">
+      <div className="container">
+        <h1>Sobre o Bootcamp 2026</h1>
+
+        {error && (
+          <div className="alert alert-warning">
+            ⚠️ {error}
+          </div>
+        )}
+
+        <div className="content">
+          <p>
+            Este projeto integra três plataformas de e-commerce e gerenciamento de conteúdo:
+          </p>
+          <ul>
+            <li>Adobe Commerce (Catálogo)</li>
+            <li>AEM (Conteúdo)</li>
+            <li>Shopify (Loja Headless)</li>
+          </ul>
+
+          <h2>Produtos em Destaque (via {source === 'aem-live' ? '🟢 AEM' : '⚪ Fallback'})</h2>
+
+          {products && products.length > 0 ? (
+            <div className="products-grid">
+              {products.map((product, index) => (
+                <div key={index} className="product-card">
+                  <h3>{product.titulo}</h3>
+                  <p className="description">{product.descricao.plaintext}</p>
+                  <div className="meta">
+                    <span className="price">R$ {product.preco}</span>
+                    <span className="category">{product.categoria}</span>
+                    <span className="tech-stack">{product.stackTecnologico}</span>
+                  </div>
+                  {product.linkExterno && (
+                    <a href={product.linkExterno} className="btn">
+                      Saiba Mais
+                    </a>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="empty">Nenhum produto disponível no momento.</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const styles = `
+  .about {
+    width: 100%;
+    padding: 2rem 0;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  .about h1 {
+    font-size: 2rem;
+    color: #667eea;
+    margin-bottom: 1rem;
+  }
+
+  .alert {
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 2rem;
+  }
+
+  .alert-warning {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+  }
+
+  .content {
+    line-height: 1.8;
+  }
+
+  .content ul {
+    margin: 1rem 0 2rem 2rem;
+  }
+
+  .content li {
+    margin-bottom: 0.5rem;
+  }
+
+  .about h2 {
+    font-size: 1.5rem;
+    color: #764ba2;
+    margin: 2rem 0 1rem 0;
+  }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+
+  .product-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 1.5rem;
+    background: #f9f9f9;
+    transition: all 0.3s ease;
+  }
+
+  .product-card:hover {
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .product-card h3 {
+    font-size: 1.2rem;
+    color: #333;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .product-card .description {
+    color: #666;
+    margin: 0.5rem 0 1rem 0;
+    font-size: 0.95rem;
+  }
+
+  .product-card .meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .product-card .price {
+    font-weight: bold;
+    color: #667eea;
+    font-size: 1.1rem;
+  }
+
+  .product-card .category,
+  .product-card .tech-stack {
+    background: #e0e0e0;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+  }
+
+  .product-card .btn {
+    display: inline-block;
+    padding: 0.6rem 1.2rem;
+    background: #667eea;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .product-card .btn:hover {
+    background: #764ba2;
+    transform: scale(1.02);
+  }
+
+  .empty {
+    text-align: center;
+    color: #999;
+    padding: 2rem 0;
+    font-style: italic;
+  }
+
+  @media (max-width: 768px) {
+    .products-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .about h1 {
+      font-size: 1.5rem;
+    }
+
+    .about h2 {
+      font-size: 1.2rem;
+    }
+  }
+`;

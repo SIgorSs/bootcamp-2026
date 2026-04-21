@@ -1,0 +1,155 @@
+{% comment %}
+  Seção customizada para exibir produtos do Bootcamp
+  Mostra produtos de uma coleção selecionada com metafields personalizados
+{% endcomment %}
+
+<div class="bootcamp-products" style="padding: {{ section.settings.padding }}rem 0;">
+  <div class="container">
+    {% if section.settings.title %}
+      <h2 class="bootcamp-products__title">{{ section.settings.title }}</h2>
+    {% endif %}
+
+    {% if section.settings.description %}
+      <p class="bootcamp-products__description">{{ section.settings.description }}</p>
+    {% endif %}
+
+    {% if section.settings.collection %}
+      <div class="bootcamp-products__grid">
+        {% for product in section.settings.collection.products limit: section.settings.max_products %}
+          <div class="bootcamp-products__card {% if product.metafields.custom.highlight_badge %}bootcamp-products__card--highlight{% endif %}">
+            
+            {% comment %} Imagem do Produto {% endcomment %}
+            <div class="bootcamp-products__image">
+              {% if product.featured_image %}
+                <img 
+                  src="{{ product.featured_image | image_url: width: 400, height: 400 }}"
+                  alt="{{ product.featured_image.alt | default: product.title }}"
+                  loading="lazy"
+                  class="bootcamp-products__img"
+                >
+              {% endif %}
+
+              {% comment %} Badge de Destaque {% endcomment %}
+              {% if product.metafields.custom.highlight_badge %}
+                <span class="bootcamp-products__badge">
+                  {{ product.metafields.custom.highlight_badge.value }}
+                </span>
+              {% endif %}
+            </div>
+
+            {% comment %} Informações do Produto {% endcomment %}
+            <div class="bootcamp-products__info">
+              <h3 class="bootcamp-products__product-title">{{ product.title }}</h3>
+
+              {% comment %} Tech Stack {% endcomment %}
+              {% if product.metafields.custom.tech_stack %}
+                <span class="bootcamp-products__tech-stack">
+                  {{ product.metafields.custom.tech_stack.value }}
+                </span>
+              {% endif %}
+
+              {% comment %} Preço e Desconto {% endcomment %}
+              <div class="bootcamp-products__price-container">
+                {% if product.compare_at_price > product.price %}
+                  <span class="bootcamp-products__compare-price">
+                    {{ product.compare_at_price | money }}
+                  </span>
+                  {% assign discount = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price | round %}
+                  <span class="bootcamp-products__discount">-{{ discount }}%</span>
+                {% endif %}
+                <span class="bootcamp-products__price">{{ product.price | money }}</span>
+              </div>
+
+              {% comment %} Descrição Curta {% endcomment %}
+              {% if product.excerpt %}
+                <p class="bootcamp-products__excerpt">{{ product.excerpt }}</p>
+              {% endif %}
+
+              {% comment %} Link para Produto {% endcomment %}
+              <a href="{{ product.url }}" class="bootcamp-products__link">
+                Ver Detalhes
+              </a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="bootcamp-products__empty">Selecione uma coleção para exibir produtos.</p>
+    {% endif %}
+  </div>
+</div>
+
+{% stylesheet %}
+  {% include 'bootcamp-products' %}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Bootcamp Products",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título",
+      "default": "Produtos em Destaque"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Descrição",
+      "default": "Conheça nossa seleção de produtos"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Coleção"
+    },
+    {
+      "type": "range",
+      "id": "max_products",
+      "min": 1,
+      "max": 20,
+      "step": 1,
+      "unit": "produtos",
+      "label": "Máximo de Produtos",
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "padding",
+      "label": "Padding (altura)",
+      "options": [
+        {
+          "value": "1",
+          "label": "Pequeno"
+        },
+        {
+          "value": "2",
+          "label": "Médio"
+        },
+        {
+          "value": "3",
+          "label": "Grande"
+        }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Cor de Fundo",
+      "default": "#f9f9f9"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bootcamp Products",
+      "settings": {
+        "title": "Produtos em Destaque",
+        "max_products": 4,
+        "padding": "2"
+      }
+    }
+  ]
+}
+{% endschema %}

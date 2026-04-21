@@ -1,0 +1,51 @@
+node_modules/
+*.log
+.env
+.env.local
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.vscode/settings.json
+.idea/
+
+# Magento
+adobe-commerce/app/code/Bootcamp/*/registration.php.bak
+adobe-commerce/vendor/
+
+# AEM
+aem-wknd/target/
+aem-wknd/node_modules/
+aem-wknd/.classpath
+aem-wknd/.project
+aem-wknd/.settings/
+
+# Shopify Hydrogen
+shopify-hydrogen/bootcamp-hydrogen/node_modules/
+shopify-hydrogen/bootcamp-hydrogen/.env
+shopify-hydrogen/bootcamp-hydrogen/dist/
+
+# Build/Cache
+*.class
+.classpath
+.gradle/
+build/
+dist/
+
+# IDE
+*.iml
+.vscode/
+.idea/
+
+# Temporary
+tmp/
+temp/
+*.tmp
+
+# ═══════════════════════════════════════════════════════════════════════
+# Symlinks para repositórios externos
+# ═══════════════════════════════════════════════════════════════════════
+magento2/
+aem/
+
