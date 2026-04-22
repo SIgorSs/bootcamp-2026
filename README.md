@@ -350,55 +350,144 @@ X-Shopify-Storefront-Access-Token: <seu-token>
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Quick Start com Scripts Automáticos
 
-### 1. Adobe Commerce - CatalogApi
+### ⚡ Executar Tudo Automaticamente
+
+Os scripts estão em `scripts/` e criam todos os dados automaticamente:
 
 ```bash
-# Entrar no diretório Commerce
-cd /home/igors/magento2
+cd /home/igors/projects/bootcamp-2026/scripts
+```
 
-# Ativar módulos
-php bin/magento module:enable Bootcamp_CatalogApi Bootcamp_AemContent
-php bin/magento setup:upgrade
-php bin/magento cache:flush
+---
 
-# Testar API
+### 1️⃣ Adobe Commerce - setup_commerce.sh
+
+```bash
+# Dar permissão
+chmod +x setup_commerce.sh
+
+# Executar (cria atributos, categorias e 5 produtos)
+./setup_commerce.sh
+```
+
+**O que cria:**
+- ✅ Atributo `bootcamp_highlight` (Yes/No)
+- ✅ Atributo `tech_stack` (Dropdown)
+- ✅ 4 Categorias
+- ✅ 5 Produtos BOOT-*
+
+**Testar:**
+```bash
 curl -s https://app.magento2.test/rest/V1/bootcamp/products | jq
-# Esperado: JSON com 5 produtos
 ```
 
-### 2. AEM - ProductShowcase Component
+---
+
+### 2️⃣ AEM - setup_aem.py
 
 ```bash
-# Build e deploy do componente
-cd /home/igors/projects/bootcamp-2026/aem-wknd
+# Instalar dependência
+pip install requests
 
-mvn clean install -PautoInstallSinglePackage
-
-# Ou deploy manual
-mvn clean install -pl ui.apps
-mvn clean install -pl core
+# Executar (cria Content Fragments)
+python3 setup_aem.py
 ```
 
-### 3. Shopify Hydrogen - Homepage
+**O que cria:**
+- ✅ Pasta DAM `/content/dam/wknd/bootcamp/produtos`
+- ✅ 5 Content Fragments
+- ✅ Testa GraphQL
+
+**⚠️ Ação manual:**
+1. Acesse: http://localhost:4502/libs/dam/gui/content/cfm/admin.html
+2. Clique em "Enable" no modelo "Produto Destaque"
+
+**Testar:**
+```bash
+curl -X POST http://localhost:4502/content/graphql/global \
+  -u admin:admin -H 'Content-Type: application/json' \
+  -d '{"query": "{ produtoDestaqueList { items { titulo } } }"}'
+```
+
+---
+
+### 3️⃣ Shopify - setup_shopify.js
+
+```bash
+# Editar com suas credenciais
+nano setup_shopify.js
+
+# Procure por:
+# const SHOP_DOMAIN = "sua-loja.myshopify.com";
+# const ADMIN_TOKEN = "shpat_SEU_TOKEN_AQUI";
+
+# Altere para:
+# const SHOP_DOMAIN = "qdt02k-t4.myshopify.com";
+# const ADMIN_TOKEN = "shpat_seu_token_real";
+
+# Executar (cria 5 produtos + 4 coleções)
+node setup_shopify.js
+```
+
+**O que cria:**
+- ✅ 5 Produtos com metafields
+- ✅ 4 Coleções
+- ✅ Metafield Definitions
+
+**Como gerar o Admin API Token:**
+1. https://qdt02k-t4.admin.shopify.com
+2. Apps and sales channels → Develop apps → Create an app
+3. Nome: "Bootcamp Setup"
+4. Configuration → Admin API scopes → Marque:
+   - ✅ write_products
+   - ✅ write_product_listings
+   - ✅ write_inventory
+   - ✅ write_collections
+   - ✅ write_metafield_definitions
+   - ✅ write_metafields
+5. Install app → API credentials → Reveal token
+6. Copie o token (começa com `shpat_`)
+
+---
+
+### 4️⃣ Shopify Hydrogen - App React/Vite
 
 ```bash
 # Setup
 cd /home/igors/projects/bootcamp-2026/shopify-hydrogen
 
-# Copiar .env.example e configurar
+# Copiar .env.example
 cp .env.example .env
 
-# Editar .env com credenciais Shopify
+# Editar com tokens Shopify
 nano .env
 
-# Install e dev
+# Instalar e rodar
 npm install
 npm run dev
 
 # Acessar: http://localhost:3000
 ```
+
+---
+
+### 📋 Ordem Recomendada
+
+```
+1. ./setup_commerce.sh      (5 min - Commerce)
+2. python3 setup_aem.py     (3 min - AEM)
+3. node setup_shopify.js    (2 min - Shopify)
+```
+
+**Tempo total:** ~10 minutos ⚡
+
+---
+
+### 📖 Documentação Completa dos Scripts
+
+Ver: [scripts/SETUP-GUIDE.md](scripts/SETUP-GUIDE.md)
 
 ---
 
