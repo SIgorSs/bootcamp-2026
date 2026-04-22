@@ -413,21 +413,37 @@ curl -X POST http://localhost:4502/content/graphql/global \
 
 ---
 
-### 3️⃣ Shopify - setup_shopify.js
+## 3️⃣ Shopify - setup_shopify.js
+
+⚠️ **IMPORTANTE 2026:** Shopify mudou seu modelo de autenticação em janeiro. Existem 2 formas de gerar o token:
+
+### **OPÇÃO RÁPIDA (RECOMENDADA)** ⚡
+
+Use nosso script helper que automatiza tudo:
 
 ```bash
-# Editar com suas credenciais
-nano setup_shopify.js
+cd /home/igors/projects/bootcamp-2026/scripts
 
-# Procure por:
-# const SHOP_DOMAIN = "sua-loja.myshopify.com";
-# const ADMIN_TOKEN = "shpat_SEU_TOKEN_AQUI";
+chmod +x get-shopify-token.sh
+./get-shopify-token.sh
+```
 
-# Altere para:
-# const SHOP_DOMAIN = "qdt02k-t4.myshopify.com";
-# const ADMIN_TOKEN = "shpat_seu_token_real";
+O script vai:
+1. ✅ Verificar Node.js e instalar Shopify CLI
+2. ✅ Gerar token automaticamente
+3. ✅ Configurar setup_shopify.js automaticamente
+4. ✅ Pronto para executar!
 
-# Executar (cria 5 produtos + 4 coleções)
+### **OPÇÃO MANUAL**
+
+Se preferir fazer manualmente, veja [scripts/SHOPIFY-TOKEN-GUIDE.md](scripts/SHOPIFY-TOKEN-GUIDE.md)
+
+### **Executar Setup Shopify**
+
+```bash
+cd /home/igors/projects/bootcamp-2026/scripts
+
+# Após gerar o token (automático ou manual)
 node setup_shopify.js
 ```
 
@@ -435,20 +451,6 @@ node setup_shopify.js
 - ✅ 5 Produtos com metafields
 - ✅ 4 Coleções
 - ✅ Metafield Definitions
-
-**Como gerar o Admin API Token:**
-1. https://qdt02k-t4.admin.shopify.com
-2. Apps and sales channels → Develop apps → Create an app
-3. Nome: "Bootcamp Setup"
-4. Configuration → Admin API scopes → Marque:
-   - ✅ write_products
-   - ✅ write_product_listings
-   - ✅ write_inventory
-   - ✅ write_collections
-   - ✅ write_metafield_definitions
-   - ✅ write_metafields
-5. Install app → API credentials → Reveal token
-6. Copie o token (começa com `shpat_`)
 
 ---
 
