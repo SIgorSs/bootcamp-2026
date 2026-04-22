@@ -58,46 +58,279 @@ O **AEM é o "cérebro de conteúdo"** que alimenta Commerce e Shopify. Commerce
 
 ## 🛠️ Pré-requisitos
 
-### Localmente Instalado
-- **Node.js 18+** — Para Hydrogen
-- **Java 17+** — Para AEM (✅ já instalado)
+### Instalado Localmente
+- **Node.js 18+** — Para Shopify Hydrogen
+- **Java 17+** — Para AEM
 - **Maven 3.8+** — Build do AEM
-- **PHP 8.1+** — Development do Commerce (opcional)
+- **Git** — Controle de versão
 
-### Instâncias Externas
-- **Adobe Commerce** (`https://app.magento2.test`) — ✅ Local WSL
-- **AEM Author** (`http://localhost:4502`) — ✅ Local WSL
-- **Shopify Store** — Loja de teste (precisará ser criada)
-- **Shopify Hydrogen** — App local em desenvolvimento
+### Rodando Localmente
+- **Adobe Commerce** — `https://app.magento2.test`
+- **AEM Author** — `http://localhost:4502`
+- **Shopify** — Conta de teste (necessário criar)
 
-### Credenciais Necessárias
-- Adobe Commerce: admin / admin (local)
-- AEM: admin / admin (local)
-- Shopify: Access Token para Storefront API
-- Shopify: Access Token para Admin API
+### Credenciais Padrão
+```
+Adobe Commerce: admin / admin
+AEM Author: admin / admin
+Shopify: Obter tokens na dashboard
+```
 
 ---
 
-## 🚀 Como Iniciar
+## 📂 Estrutura do Projeto
 
-### 1. Clonar e Preparar
-
-```bash
-cd /home/igors/projects/bootcamp-2026
-
-# Estrutura já criada
-ls -la
+```
+bootcamp-2026/
+├── 📄 README.md                       ← Você está aqui
+├── 📄 SETUP.md                        ← Guia passo a passo
+├── 📁 docs/
+│   ├── endpoints.md                   ← API Reference
+│   ├── arquitetura.md                 ← Diagramas e fluxos
+│   └── checklist.md                   ← Tarefas por dia
+│
+├── 📁 adobe-commerce/
+│   └── app/code/Bootcamp/
+│       ├── CatalogApi/                ← REST API (✅ Pronto)
+│       └── AemContent/                ← Banner integrado (✅ Pronto)
+│
+├── 📁 aem-wknd/
+│   ├── core/
+│   │   └── src/main/java/com/adobe/wknd/core/models/
+│   │       ├── ProductShowcase.java       ← Interface
+│   │       └── ProductShowcaseImpl.java    ← Sling Model
+│   ├── ui.apps/
+│   │   └── src/main/content/jcr_root/apps/wknd/components/productshowcase/
+│   │       ├── .content.xml              ← Metadados
+│   │       ├── productshowcase.html      ← Template HTL
+│   │       └── _cq_dialog/.content.xml   ← Dialog
+│   └── pom.xml                        ← Maven config
+│
+├── 📁 shopify-theme/
+│   ├── assets/bootcamp-products.css    ← Estilos BEM
+│   └── sections/bootcamp-products.liquid ← Seção customizada
+│
+└── 📁 shopify-hydrogen/
+    ├── app/
+    │   ├── routes/
+    │   │   ├── _index.jsx              ← Homepage
+    │   │   └── about.jsx               ← About (conteúdo AEM)
+    │   ├── components/
+    │   │   └── ProductCard.jsx         ← Card de produto
+    │   └── styles/
+    │       └── bootcamp.css            ← CSS global
+    ├── .env.example                    ← Template de variáveis
+    └── README.md
 ```
 
-### 2. Adobe Commerce (Fases 1 e 3)
+---
+
+## 🚀 Quick Start
+
+### 1. Adobe Commerce - CatalogApi
 
 ```bash
-cd /home/igors/projects/magento2
+# Entrar no diretório Commerce
+cd /home/igors/magento2
 
-# Verificar instalação
-php bin/magento --version
+# Ativar módulos
+php bin/magento module:enable Bootcamp_CatalogApi Bootcamp_AemContent
+php bin/magento setup:upgrade
+php bin/magento cache:flush
 
-# Criar atributos e categorias (via admin UI)
+# Testar API
+curl -s https://app.magento2.test/rest/V1/bootcamp/products | jq
+# Esperado: JSON com 5 produtos
+```
+
+### 2. AEM - ProductShowcase Component
+
+```bash
+# Build e deploy do componente
+cd /home/igors/projects/bootcamp-2026/aem-wknd
+
+mvn clean install -PautoInstallSinglePackage
+
+# Ou deploy manual
+mvn clean install -pl ui.apps
+mvn clean install -pl core
+```
+
+### 3. Shopify Hydrogen - Homepage
+
+```bash
+# Setup
+cd /home/igors/projects/bootcamp-2026/shopify-hydrogen
+
+# Copiar .env.example e configurar
+cp .env.example .env
+
+# Editar .env com credenciais Shopify
+nano .env
+
+# Install e dev
+npm install
+npm run dev
+
+# Acessar: http://localhost:3000
+```
+
+---
+
+## 📝 Fluxo de Integração
+
+### Cenário: Exibir Produtos em Destaque no Hydrogen
+
+```
+┌────────────────────────────┐
+│ 1. AEM Content Fragment    │
+│    - Titulo: "Camiseta..." │
+│    - Destaque: true        │
+│    - Publicar              │
+└────────────────┬───────────┘
+                 │
+                 ▼
+┌────────────────────────────┐
+│ 2. GraphQL Query (AEM)     │
+│ POST /content/graphql/     │
+│ Filter: destaque = true    │
+└────────────────┬───────────┘
+                 │
+                 ▼
+┌────────────────────────────┐
+│ 3. Hydrogen /about.jsx     │
+│ - Loader fetches AEM       │
+│ - Basic Auth: admin:admin  │
+│ - Fallback se offline      │
+└────────────────┬───────────┘
+                 │
+                 ▼
+┌────────────────────────────┐
+│ 4. Browser                 │
+│ http://localhost:3000/about│
+│ Produtos renderizados ✅   │
+└────────────────────────────┘
+```
+
+### Cenário: Mostrar Preços do Commerce no Hydrogen
+
+```
+┌────────────────────────────┐
+│ 1. Commerce API            │
+│ GET /V1/bootcamp/products  │
+│ Retorna: SKU, Preço, etc   │
+└────────────────┬───────────┘
+                 │
+                 ▼
+┌────────────────────────────┐
+│ 2. Hydrogen Homepage       │
+│ app/routes/_index.jsx      │
+│ Loader fetches Commerce    │
+└────────────────┬───────────┘
+                 │
+                 ▼
+┌────────────────────────────┐
+│ 3. ProductCard Component   │
+│ - Title                    │
+│ - Price (R$)               │
+│ - Tech Stack Badge         │
+│ - Highlight Badge          │
+└────────────────┬───────────┘
+                 │
+                 ▼
+┌────────────────────────────┐
+│ 4. Browser                 │
+│ http://localhost:3000/     │
+│ Produtos exibidos ✅       │
+└────────────────────────────┘
+```
+
+---
+
+## 🔌 APIs de Referência
+
+### Commerce REST API
+```bash
+GET https://app.magento2.test/rest/V1/bootcamp/products
+
+Response:
+{
+  "items": [
+    {
+      "sku": "BOOT-CAM-001",
+      "name": "Camiseta Bootcamp 2026",
+      "price": 89.90,
+      "bootcamp_highlight": true,
+      "tech_stack": "React",
+      "image_url": "..."
+    }
+  ]
+}
+```
+
+### AEM GraphQL
+```bash
+POST http://localhost:4502/content/graphql/global
+Authorization: Basic admin:admin
+
+Body:
+{
+  "query": "{ produtoDestaqueList { items { titulo preco destaque } } }"
+}
+```
+
+### Shopify Storefront API
+```bash
+POST https://seu-store.myshopify.com/api/2024-01/graphql.json
+X-Shopify-Storefront-Access-Token: seu-token
+
+Body:
+{
+  "query": "{ collectionByHandle(handle: \"destaques\") { ... } }"
+}
+```
+
+---
+
+## 📋 Checklist de Desenvolvimento
+
+### Fase 1: Adobe Commerce (Dias 11-14)
+- [x] Criar atributos customizados
+- [x] Criar categorias
+- [x] Criar 5 produtos
+- [x] Módulo CatalogApi
+- [x] Testar API REST
+
+### Fase 2: AEM (Dia 12)
+- [x] Content Fragment Model
+- [x] Upload de imagens
+- [x] Criar Content Fragments
+- [x] Queries GraphQL
+- [x] Persisted Query
+
+### Fase 3: Integração AEM + Commerce (Dia 15)
+- [x] Componente ProductShowcase
+- [x] Sling Model
+- [x] HTL Template
+- [x] Deploy
+
+### Fase 4: Shopify Liquid (Dia 13)
+- [ ] Metafield Definitions
+- [ ] Criar 5 produtos
+- [ ] Coleções
+- [ ] Seção bootcamp-products.liquid
+
+### Fase 5: Shopify Hydrogen (Dia 16)
+- [x] Homepage
+- [x] Product Page
+- [x] About (AEM integration)
+- [x] Estilos
+
+### Fase 6: Integração Final (Dia 17)
+- [ ] AEM Content no Hydrogen
+- [ ] AEM Banner no Commerce
+- [ ] Experience Fragments
+- [ ] Teste completo
 # URL: https://app.magento2.test/admin
 
 # Criar módulos:
