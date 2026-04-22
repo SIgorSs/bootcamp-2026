@@ -1,9 +1,12 @@
+/**
+ * Rota: / (Homepage)
+ * Exibe produtos em destaque da coleção "destaques"
+ * Integração com Shopify Storefront API
+ */
+
 import {useShopQuery} from '@shopify/hydrogen';
 import ProductCard from '~/components/ProductCard.client';
 
-/**
- * Homepage - Exibe produtos em destaque da coleção "destaques"
- */
 export default function Homepage() {
   return (
     <div className="homepage">
@@ -118,88 +121,6 @@ const DESTAQUES_QUERY = `
           }
         }
       }
-    }
-  }
-`;
-
-const styles = `
-  .homepage {
-    width: 100%;
-  }
-
-  .hero {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 4rem 2rem;
-    text-align: center;
-    border-radius: 8px;
-    margin-bottom: 3rem;
-  }
-
-  .hero h1 {
-    font-size: 2.5rem;
-    margin: 0 0 1rem 0;
-  }
-
-  .hero p {
-    font-size: 1.2rem;
-    margin: 0 0 2rem 0;
-  }
-
-  .btn {
-    display: inline-block;
-    padding: 0.75rem 1.5rem;
-    border-radius: 4px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
-  }
-
-  .btn-primary {
-    background: #ffcc00;
-    color: #333;
-  }
-
-  .btn-primary:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  }
-
-  .destaques {
-    margin: 3rem 0;
-  }
-
-  .destaques h2 {
-    font-size: 2rem;
-    text-align: center;
-    margin-bottom: 2rem;
-    color: #667eea;
-  }
-
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1rem;
-  }
-
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 2rem;
-  }
-
-  @media (max-width: 768px) {
-    .hero h1 {
-      font-size: 1.8rem;
-    }
-
-    .hero p {
-      font-size: 1rem;
-    }
-
-    .grid {
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 1rem;
     }
   }
 `;

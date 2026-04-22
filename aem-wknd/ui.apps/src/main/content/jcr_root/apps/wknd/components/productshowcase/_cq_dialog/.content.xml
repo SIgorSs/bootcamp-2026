@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+    xmlns:granite="http://www.adobe.com/jcr/granite/ui/components"
+    xmlns:cq="http://www.day.com/jcr/cq/1.0"
+    xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="cq:Dialog"
+    title="Product Showcase"
+    helpPath="en/cq/using/default_page_authoring.html">
+    
+    <content
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/container">
+        
+        <items jcr:primaryType="nt:unstructured">
+            
+            <tabs
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/coral/foundation/tabs">
+                
+                <items jcr:primaryType="nt:unstructured">
+                    
+                    <settings
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/coral/foundation/container"
+                        granite:rel="granite:Relationship"
+                        text="Settings">
+                        
+                        <items jcr:primaryType="nt:unstructured">
+                            
+                            <title
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                fieldLabel="Título da Seção"
+                                name="./title"
+                                value="Produtos em Destaque"/>
+                            
+                            <apiUrl
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                fieldLabel="URL da API"
+                                name="./apiUrl"
+                                value="https://app.magento2.test/rest/V1/bootcamp/products"/>
+                            
+                            <highlightOnly
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/checkbox"
+                                fieldLabel="Apenas Destaques"
+                                name="./highlightOnly"
+                                value="true"
+                                uncheckedValue="false"
+                                checked="false"/>
+                            
+                        </items>
+                        
+                    </settings>
+                    
+                </items>
+                
+            </tabs>
+            
+        </items>
+        
+    </content>
+    
+</jcr:root>

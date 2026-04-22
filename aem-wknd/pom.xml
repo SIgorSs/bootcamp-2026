@@ -1,0 +1,133 @@
+# AEM WKND - Bootcamp 2026
+
+Projeto AEM com integração do Bootcamp 2026.
+
+## 📦 Estrutura de Diretórios
+
+```
+aem-wknd/
+├── ui.apps/
+│   └── src/main/content/jcr_root/apps/wknd/components/
+│       └── productshowcase/
+│           ├── .content.xml
+│           ├── productshowcase.html
+│           └── _cq_dialog/
+│               └── .content.xml
+├── core/
+│   └── src/main/java/com/adobe/wknd/core/
+│       └── models/
+│           ├── ProductShowcase.java
+│           └── ProductShowcaseImpl.java
+└── pom.xml
+```
+
+## 🚀 Setup
+
+### Pré-requisitos
+- Java 11+
+- Maven 3.6+
+- AEM 6.5+ rodando localmente em http://localhost:4502
+
+### Build
+
+```bash
+# Build completo
+mvn clean install -PautoInstallSinglePackage
+
+# Build apenas core
+mvn clean install -pl core
+
+# Build apenas ui.apps
+mvn clean install -pl ui.apps
+```
+
+### Deploy
+
+```bash
+# Deploy automático (via maven)
+mvn clean install -PautoInstallSinglePackage
+
+# Ou manual com curl
+curl -u admin:admin -F jar=@ui.apps/target/wknd.ui.apps-*.zip http://localhost:4502/crx/packmgr/service.jsp
+curl -u admin:admin -F jar=@core/target/wknd.core-*.jar http://localhost:4502/system/console/bundles
+```
+
+## 📄 Componentes Criados
+
+### ProductShowcase
+
+Componente que exibe produtos do Adobe Commerce via API REST.
+
+**Funcionalidades:**
+- Busca produtos via `/V1/bootcamp/products`
+- Filtra apenas destaques (opcional)
+- Renderiza em HTL com Sling Model
+- Tratamento de erro com fallback
+
+**Uso:**
+1. Criar página em AEM Sites
+2. Arrastar componente "Product Showcase" para a página
+3. Configurar:
+   - URL da API
+   - Título da seção
+   - Checkbox "Apenas destaques"
+4. Publicar
+
+## 🔌 Integração com Adobe Commerce
+
+API: `https://app.magento2.test/rest/V1/bootcamp/products`
+
+Retorna produtos com campos:
+- `sku`
+- `name`
+- `price`
+- `bootcamp_highlight`
+- `tech_stack`
+- `image_url`
+
+## 📚 Content Fragments
+
+Content Fragment Model: `Produto Destaque`
+
+Campos:
+- `titulo` (Text)
+- `descricao` (Rich Text)
+- `preco` (Number)
+- `imagem` (Content Reference)
+- `categoria` (Enumeration)
+- `stackTecnologico` (Enumeration)
+- `destaque` (Boolean)
+- `linkExterno` (Text)
+
+## 🧪 Testes
+
+### GraphQL Query
+
+```graphql
+{
+  produtoDestaqueList {
+    items {
+      titulo
+      preco
+      categoria
+      destaque
+    }
+  }
+}
+```
+
+### Filtrar por Destaque
+
+```graphql
+{
+  produtoDestaqueList(filter: { destaque: { _expressions: [{ value: true }] } }) {
+    items {
+      titulo
+    }
+  }
+}
+```
+
+## 📝 Licença
+
+Adobe WKND - Bootcamp 2026

@@ -1,8 +1,6 @@
-# AEM WKND - Projeto Bootcamp
+# AEM WKND - Bootcamp 2026
 
-## 📦 O Que Está Aqui
-
-Estrutura e configuração para o projeto AEM WKND com integração do Bootcamp 2026.
+Projeto AEM com integração do Bootcamp 2026. Inclui componentes customizados para exibir produtos do Adobe Commerce e Content Fragments com GraphQL.
 
 ---
 

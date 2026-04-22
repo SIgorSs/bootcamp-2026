@@ -1,0 +1,155 @@
+<div class="product-showcase">
+    <div class="product-showcase__container">
+        <h2 class="product-showcase__title">${properties.title @ context='html'}</h2>
+        
+        <div class="product-showcase__products">
+            <sly data-sly-test="${products}">
+                <div class="product-showcase__grid">
+                    <sly data-sly-repeat="${products}">
+                        <div class="product-showcase__card">
+                            <div class="product-showcase__image">
+                                <img src="${item.image_url}" alt="${item.name @ context='html'}" />
+                            </div>
+                            <div class="product-showcase__content">
+                                <h3 class="product-showcase__product-title">${item.name @ context='html'}</h3>
+                                <p class="product-showcase__sku">SKU: ${item.sku @ context='html'}</p>
+                                <p class="product-showcase__price">R$ ${item.price}</p>
+                                
+                                <sly data-sly-test="${item.tech_stack}">
+                                    <span class="product-showcase__tech-stack">${item.tech_stack @ context='html'}</span>
+                                </sly>
+                                
+                                <sly data-sly-test="${item.bootcamp_highlight}">
+                                    <span class="product-showcase__badge">Destaque</span>
+                                </sly>
+                            </div>
+                        </div>
+                    </sly>
+                </div>
+            </sly>
+            
+            <sly data-sly-test="${!products}">
+                <p class="product-showcase__empty">Nenhum produto disponível no momento.</p>
+            </sly>
+        </div>
+    </div>
+</div>
+
+<style>
+.product-showcase {
+    width: 100%;
+    margin: 2rem 0;
+}
+
+.product-showcase__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.product-showcase__title {
+    font-size: 2rem;
+    color: #667eea;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.product-showcase__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+.product-showcase__card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.product-showcase__card:hover {
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    transform: translateY(-4px);
+}
+
+.product-showcase__image {
+    width: 100%;
+    height: 250px;
+    overflow: hidden;
+    background: #f5f5f5;
+}
+
+.product-showcase__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.product-showcase__card:hover .product-showcase__image img {
+    transform: scale(1.05);
+}
+
+.product-showcase__content {
+    padding: 1.5rem;
+}
+
+.product-showcase__product-title {
+    font-size: 1.1rem;
+    margin: 0 0 0.5rem 0;
+    color: #333;
+}
+
+.product-showcase__sku {
+    font-size: 0.85rem;
+    color: #999;
+    margin: 0 0 0.5rem 0;
+}
+
+.product-showcase__price {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #667eea;
+    margin: 0.5rem 0;
+}
+
+.product-showcase__tech-stack {
+    display: inline-block;
+    background: #667eea;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.product-showcase__badge {
+    display: inline-block;
+    background: #ffcc00;
+    color: #333;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.product-showcase__empty {
+    text-align: center;
+    padding: 2rem;
+    color: #999;
+}
+
+@media (max-width: 768px) {
+    .product-showcase__grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 1rem;
+    }
+
+    .product-showcase__image {
+        height: 180px;
+    }
+}
+</style>
