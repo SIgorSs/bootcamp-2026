@@ -1,38 +1,71 @@
 # 🚀 Bootcamp 2026: Integração Adobe Commerce + AEM + Shopify
 
-## 📋 Visão Geral
+Documentação consolidada do projeto de integração de 3 plataformas: Adobe Commerce, AEM (Adobe Experience Manager) e Shopify com Hydrogen.
 
-Projeto de integração de 3 plataformas de e-commerce e gerenciamento de conteúdo:
+## 📋 Visão Geral
 
 - **Adobe Commerce (Magento 2)** — Catálogo de produtos via REST API
 - **AEM (Adobe Experience Manager)** — Gerenciamento de conteúdo via GraphQL
 - **Shopify** — Loja headless com Hydrogen (React/Vite)
 
-O **AEM é o "cérebro de conteúdo"** que alimenta Commerce e Shopify. Commerce gerencia catálogo e vendas. Shopify oferece uma experiência headless com Hydrogen.
+**O AEM é o "cérebro de conteúdo"** que alimenta Commerce e Shopify. Commerce gerencia catálogo e vendas. Shopify oferece uma experiência headless com Hydrogen.
 
 ---
 
-## 🏗️ Arquitetura
+## 🏗️ Arquitetura Completa
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                     AEM Content                          │
-│              (Content Fragments + GraphQL)               │
-└──────────────┬────────────────┬──────────────────────────┘
-               │                │
-       ┌───────▼────────┐  ┌────▼──────────┐
-       │ Adobe Commerce │  │ Shopify Store │
-       │  REST API      │  │ Liquid + JS   │
-       │  /V1/bootcamp  │  │               │
-       └────────┬───────┘  └────┬──────────┘
-                │               │
-         ┌──────▼───────────────▼──────┐
-         │   Shopify Hydrogen App      │
-         │  (React/Vite Headless)      │
-         │  - Homepage (Destaques)     │
-         │  - Product Page             │
-         │  - About (Conteúdo AEM)     │
-         └────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│                      BOOTCAMP 2026 ARCHITECTURE                  │
+└──────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                                                                     │
+│                    🧠 AEM — CONTENT BRAIN                           │
+│                 http://localhost:4502                               │
+│                                                                     │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │ Content Fragments (Produtos Destaque)                       │   │
+│  │ Experience Fragments (Banners + Promos)                    │   │
+│  │ GraphQL Queries (Persisted + Dynamic)                      │   │
+│  │ DAM Assets (Imagens dos Produtos)                          │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│                                                                     │
+│  GraphQL Endpoints:                                                 │
+│  ├─ POST /content/graphql/global  ← Queries diretas                │
+│  └─ GET  /graphql/execute.json/wknd/bootcamp-products ← Persisted │
+│                                                                     │
+└──────────────┬──────────────────────────────┬───────────────────────┘
+               │                              │
+    ┌──────────▼──────────┐        ┌──────────▼──────────┐
+    │   ADOBE COMMERCE    │        │    SHOPIFY STORE    │
+    │  (Catálogo + Vendas)│        │ (Liquid + Metafields)
+    │  https://app.       │        │ https://seu-store.  │
+    │  magento2.test      │        │ myshopify.com       │
+    │                     │        │                     │
+    │ REST API            │        │ Storefront API      │
+    │ /V1/bootcamp/       │        │ + Admin API         │
+    │ products            │        │ (for Metafields)    │
+    │                     │        │                     │
+    │ Módulos:            │        │ Seções Liquid:      │
+    │ • CatalogApi ✅     │        │ • bootcamp-products │
+    │ • AemContent ✅     │        │ • Product cards     │
+    │                     │        │                     │
+    └──────────┬──────────┘        └──────────┬──────────┘
+               │                              │
+               └──────────────┬───────────────┘
+                              │
+                    ┌─────────▼─────────┐
+                    │  SHOPIFY HYDROGEN │
+                    │ (React/Vite App)  │
+                    │  localhost:3000   │
+                    │                   │
+                    │ Routes:           │
+                    │ • / (Homepage)    │
+                    │ • /products/$h    │
+                    │ • /about (AEM)    │
+                    │                   │
+                    └───────────────────┘
 ```
 
 **Fluxos de Dados:**
@@ -82,17 +115,25 @@ Shopify: Obter tokens na dashboard
 
 ```
 bootcamp-2026/
-├── 📄 README.md                       ← Você está aqui
-├── 📄 SETUP.md                        ← Guia passo a passo
-├── 📁 docs/
-│   ├── endpoints.md                   ← API Reference
-│   ├── arquitetura.md                 ← Diagramas e fluxos
-│   └── checklist.md                   ← Tarefas por dia
+├── 📄 README.md                       ← Documentação completa
 │
 ├── 📁 adobe-commerce/
 │   └── app/code/Bootcamp/
 │       ├── CatalogApi/                ← REST API (✅ Pronto)
+│       │   ├── registration.php
+│       │   ├── etc/
+│       │   │   ├── module.xml
+│       │   │   ├── di.xml
+│       │   │   └── webapi.xml
+│       │   ├── Api/ProductListInterface.php
+│       │   └── Model/ProductList.php
 │       └── AemContent/                ← Banner integrado (✅ Pronto)
+│           ├── registration.php
+│           ├── etc/
+│           │   ├── module.xml
+│           │   └── di.xml
+│           ├── Block/AemBanner.php
+│           └── templates/aem-banner.phtml
 │
 ├── 📁 aem-wknd/
 │   ├── core/
@@ -104,23 +145,207 @@ bootcamp-2026/
 │   │       ├── .content.xml              ← Metadados
 │   │       ├── productshowcase.html      ← Template HTL
 │   │       └── _cq_dialog/.content.xml   ← Dialog
-│   └── pom.xml                        ← Maven config
+│   └── pom.xml
 │
 ├── 📁 shopify-theme/
-│   ├── assets/bootcamp-products.css    ← Estilos BEM
-│   └── sections/bootcamp-products.liquid ← Seção customizada
+│   ├── assets/bootcamp-products.css
+│   └── sections/bootcamp-products.liquid
 │
 └── 📁 shopify-hydrogen/
     ├── app/
     │   ├── routes/
     │   │   ├── _index.jsx              ← Homepage
-    │   │   └── about.jsx               ← About (conteúdo AEM)
-    │   ├── components/
-    │   │   └── ProductCard.jsx         ← Card de produto
-    │   └── styles/
-    │       └── bootcamp.css            ← CSS global
-    ├── .env.example                    ← Template de variáveis
-    └── README.md
+    │   │   ├── products.$handle.jsx    ← Product Page
+    │   │   └── about.jsx               ← About (AEM)
+    │   ├── components/ProductCard.jsx
+    │   └── styles/bootcamp.css
+    ├── .env.example
+    └── package.json
+```
+
+---
+
+## 🔌 APIs & Endpoints
+
+### Adobe Commerce REST API
+
+**Base URL:**
+```
+https://app.magento2.test/rest/V1/
+```
+
+**Endpoint: GET /bootcamp/products**
+
+Retorna 5 produtos com atributos customizados.
+
+```bash
+curl -s https://app.magento2.test/rest/V1/bootcamp/products | jq
+```
+
+**Response (200 OK):**
+```json
+{
+  "items": [
+    {
+      "id": 1,
+      "sku": "BOOT-CAM-001",
+      "name": "Camiseta Bootcamp 2026",
+      "type": "configurable",
+      "price": 89.90,
+      "currency": "BRL",
+      "bootcamp_highlight": true,
+      "tech_stack": "React",
+      "image_url": "https://app.magento2.test/media/catalog/product/b/o/boot-cam-001.jpg",
+      "description": "Camiseta oficial do Bootcamp",
+      "status": 1,
+      "visibility": 4
+    },
+    {
+      "id": 2,
+      "sku": "BOOT-CAN-002",
+      "name": "Caneca Developer",
+      "type": "simple",
+      "price": 45.00,
+      "currency": "BRL",
+      "bootcamp_highlight": true,
+      "tech_stack": "JavaScript",
+      "image_url": "https://app.magento2.test/media/catalog/product/b/o/boot-can-002.jpg"
+    },
+    {
+      "id": 3,
+      "sku": "BOOT-MOC-003",
+      "name": "Mochila Tech",
+      "type": "simple",
+      "price": 199.90,
+      "currency": "BRL",
+      "bootcamp_highlight": false,
+      "tech_stack": "Java",
+      "image_url": "https://app.magento2.test/media/catalog/product/b/o/boot-moc-003.jpg"
+    },
+    {
+      "id": 4,
+      "sku": "BOOT-KIT-004",
+      "name": "Kit Adesivos Dev",
+      "type": "grouped",
+      "price": 29.90,
+      "currency": "BRL",
+      "bootcamp_highlight": true,
+      "tech_stack": "PHP",
+      "image_url": "https://app.magento2.test/media/catalog/product/b/o/boot-kit-004.jpg"
+    },
+    {
+      "id": 5,
+      "sku": "BOOT-CUR-005",
+      "name": "Curso Online Adobe Commerce",
+      "type": "virtual",
+      "price": null,
+      "currency": "BRL",
+      "bootcamp_highlight": true,
+      "tech_stack": "Liquid",
+      "image_url": "https://app.magento2.test/media/catalog/product/b/o/boot-cur-005.jpg"
+    }
+  ]
+}
+```
+
+### AEM GraphQL API
+
+**Base URL:**
+```
+http://localhost:4502/content/graphql/global
+```
+
+**Query: Listar todos os Produtos**
+```graphql
+{
+  produtoDestaqueList {
+    items {
+      titulo
+      preco
+      categoria
+      stackTecnologico
+      destaque
+      descricao {
+        plaintext
+      }
+    }
+  }
+}
+```
+
+**Query: Filtrar apenas Destaques**
+```graphql
+{
+  produtoDestaqueList(filter: {
+    destaque: {
+      _expressions: [{value: true}]
+    }
+  }) {
+    items {
+      titulo
+      preco
+      categoria
+    }
+  }
+}
+```
+
+**Persisted Query:**
+```bash
+curl -X PUT 'http://localhost:4502/graphql/persist.json/wknd/bootcamp-products' \
+  -H 'Content-Type: application/json' \
+  -u admin:admin \
+  -d '{"query": "{ produtoDestaqueList { items { titulo preco categoria stackTecnologico destaque descricao { plaintext } } } }"}'
+```
+
+Execute persisted query:
+```
+GET http://localhost:4502/content/graphql/execute.json/wknd/bootcamp-products
+```
+
+### Shopify Storefront API
+
+**Base URL:**
+```
+https://seu-store.myshopify.com/api/graphql.json
+```
+
+**Header:**
+```
+X-Shopify-Storefront-Access-Token: <seu-token>
+```
+
+**Query: Coleção com Produtos e Metafields**
+```graphql
+{
+  collection(handle: "destaques") {
+    title
+    products(first: 10) {
+      edges {
+        node {
+          id
+          title
+          handle
+          priceRange {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+          metafields(identifiers: [
+            {namespace: "custom", key: "tech_stack"},
+            {namespace: "custom", key: "highlight_badge"},
+            {namespace: "custom", key: "bootcamp_year"}
+          ]) {
+            namespace
+            key
+            value
+          }
+        }
+      }
+    }
+  }
+}
 ```
 
 ---
