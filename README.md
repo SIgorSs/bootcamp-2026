@@ -415,35 +415,40 @@ curl -X POST http://localhost:4502/content/graphql/global \
 
 ## 3️⃣ Shopify - setup_shopify.js
 
-⚠️ **IMPORTANTE 2026:** Shopify mudou seu modelo de autenticação em janeiro. Existem 2 formas de gerar o token:
+⚠️ **IMPORTANTE 2026:** Shopify mudou autenticação em janeiro/2026. Use nosso Wizard interativo:
 
-### **OPÇÃO RÁPIDA (RECOMENDADA)** ⚡
-
-Use nosso script helper que automatiza tudo:
+### **🪄 OPÇÃO RECOMENDADA: Token Wizard** ⚡
 
 ```bash
 cd /home/igors/projects/bootcamp-2026/scripts
 
-chmod +x get-shopify-token.sh
-./get-shopify-token.sh
+chmod +x shopify-token-wizard.sh
+./shopify-token-wizard.sh
 ```
 
-O script vai:
-1. ✅ Verificar Node.js e instalar Shopify CLI
-2. ✅ Gerar token automaticamente
-3. ✅ Configurar setup_shopify.js automaticamente
-4. ✅ Pronto para executar!
+O wizard vai:
+1. ✅ Detectar sua situação (app já criada ou não)
+2. ✅ Guiar você interativamente
+3. ✅ Gerar token automaticamente (3 métodos diferentes)
+4. ✅ Configurar setup_shopify.js automaticamente
+5. ✅ Pronto para executar!
 
-### **OPÇÃO MANUAL**
+### **Opções do Wizard:**
+- **Opção 1:** Já criei a app → Inserir Client ID + Secret
+- **Opção 2:** Primeira vez → Criar app + gerar token (abre admin)
+- **Opção 3:** Automático → Usa Shopify CLI (sem clicar)
 
-Se preferir fazer manualmente, veja [scripts/SHOPIFY-TOKEN-GUIDE.md](scripts/SHOPIFY-TOKEN-GUIDE.md)
+### **📖 Documentação Completa**
 
-### **Executar Setup Shopify**
+Se preferir fazer manualmente ou tem dúvidas:
+- [scripts/SHOPIFY-TOKEN-GUIDE.md](scripts/SHOPIFY-TOKEN-GUIDE.md) - Guia com 2 opções
+
+### **🚀 Depois: Executar Setup Shopify**
 
 ```bash
 cd /home/igors/projects/bootcamp-2026/scripts
 
-# Após gerar o token (automático ou manual)
+# Token já foi configurado pelo wizard
 node setup_shopify.js
 ```
 
