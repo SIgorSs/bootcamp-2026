@@ -1,0 +1,43 @@
+# ═══════════════════════════════════════════════════════════════════
+# Titulo com até 50 caracteres (use emoji!)
+# ═══════════════════════════════════════════════════════════════════
+# Exemplo:
+# ✨ Feat: Adicionar paginação em CatalogApi
+# 🐛 Fix: Corrigir cache timeout
+# 📝 Docs: Atualizar README
+# ♻️ Refactor: Simplificar ProductList
+
+# ═══════════════════════════════════════════════════════════════════
+# Descrição detalhada (limite de 72 caracteres por linha)
+# ═══════════════════════════════════════════════════════════════════
+
+# ═══════════════════════════════════════════════════════════════════
+# EMOJIS RECOMENDADOS:
+# ═══════════════════════════════════════════════════════════════════
+# ✨ Feat:        nova funcionalidade
+# 🐛 Fix:         correção de bug
+# 📝 Docs:        documentação
+# 🎨 Style:       formatação
+# ♻️ Refactor:    refatoração
+# ⚡ Perf:        performance
+# ✅ Test:        testes
+# 🔧 Chore:       tarefas admin
+# 🚀 Deploy:      deploy/release
+# ⚠️ WIP:         work in progress
+# 🔒 Security:    segurança
+
+# ═══════════════════════════════════════════════════════════════════
+# REFERÊNCIAS (opcional):
+# ═══════════════════════════════════════════════════════════════════
+# Issue: #123
+# Closes: #456
+# Refs: #789
+
+# ═══════════════════════════════════════════════════════════════════
+# BRANCH:
+# ═══════════════════════════════════════════════════════════════════
+# feature/* → nova funcionalidade
+# bugfix/*  → correção de bug
+# hotfix/*  → urgente em produção
+# release/* → preparação de release
+
