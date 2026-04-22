@@ -2,74 +2,65 @@
 
 **Domínio Shopify:** `qdt02k-t4.myshopify.com`
 
-⚠️ **IMPORTANTE 2026:** Shopify mudou seu modelo de autenticação em janeiro de 2026. Existem 2 fluxos possíveis:
+📌 **Fonte Oficial:** https://help.shopify.com (Documentação oficial Shopify 2026)
+
+⚠️ **IMPORTANTE 2026:** Shopify mudou seu modelo de autenticação em janeiro de 2026. A partir dessa data:
+
+- ❌ Apps novos **não** aparecem mais no admin com token estático para copiar
+- ✅ Apps novos **precisam** gerar token via OAuth (Client Credentials Flow)
+- ✅ Apps antigos (pré-janeiro 2026) ainda podem ter token estático
+
+Existem 2 cenários possíveis:
 
 ---
 
 ## 🔄 QUAL FLUXO VOCÊ USA?
 
-### ✅ Opção A: Custom App (LEGACY - Ainda Funciona)
-**Quando:** Sua loja ainda mostra "Create custom app" no Admin
+### 📅 App Criado ANTES de Janeiro 2026?
 **Token:** `shpat_...` (estático, fácil de copiar)
-**Usar:** [Guia Opção A abaixo](#-opção-a-custom-app-legacy)
+→ [Opção A: Custom App ANTIGO](#-opção-a-custom-app-antigo-pré-janeiro-2026)
 
-### ✅ Opção B: App via Dev Dashboard (NOVO - Padrão 2026)
-**Quando:** Você vê "Develop apps" ou "Dev Dashboard"
-**Token:** Client ID + Client Secret (OAuth / Credentials Flow)
-**Usar:** [Guia Opção B abaixo](#-opção-b-oauth--credentials-flow-novo)
+### 📅 App Criado DEPOIS de Janeiro 2026?
+**Token:** Gera via OAuth (Client ID + Secret)
+→ [Opção B: App Novo via Dev Dashboard](#-opção-b-custom-app-novo-pós-janeiro-2026)
+
+### ❓ Não sabe quando foi criado?
+**Teste:** Vá em Admin → Settings → Develop apps → [Seu app] → Credenciais da API
+- Se aparecer botão **"Revelar token"** → Use Opção A
+- Se aparecer **"Client ID"** e **"Client Secret"** → Use Opção B
 
 ---
 
-## 📋 Opção A: Custom App (LEGACY)
+## 📋 Opção A: Custom App ANTIGO (Pré-Janeiro 2026)
 
-✅ **SE** você conseguir acessar e criar um custom app, use este fluxo.
+✅ **APLICA SE:** Você tem um app criado antes de janeiro de 2026
 
-### 1️⃣ Ir para Custom Apps
+Neste caso, o token estático ainda está disponível no admin.
+
+### 1️⃣ Ir para Admin da Shopify
 
 ```
-https://qdt02k-t4.admin.shopify.com/settings/apps-and-integrations/apps-and-sales-channels
+https://qdt02k-t4.admin.shopify.com
 ```
 
-Procure por **"Develop apps"** na barra lateral.
+### 2️⃣ Configurações → Apps e canais de vendas
 
-Se encontrar uma opção **"Create custom app"**, clique aqui e pule para o passo 3.
+Na barra lateral esquerda, clique em **"Apps e canais de vendas"**
 
----
+### 3️⃣ Desenvolver apps
 
-### 2️⃣ Se não tiver Custom Apps
+Clique em **"Desenvolver apps"**
 
-Se a opção **"Create custom app"** não existir, significa sua loja usa o novo modelo (Opção B). Vá para [Opção B](#-opção-b-oauth--credentials-flow-novo).
+### 4️⃣ Selecionar seu app
 
----
+Clique no nome da app que criou (ex: "Bootcamp Setup")
 
-### 3️⃣ Criar Custom App
+### 5️⃣ Credenciais da API → Revelar token
 
-Clique em **"Create custom app"** ou **"Create an app"**
-
-**Nome:** `Bootcamp Setup`
-
----
-
-### 4️⃣ Configurar Escopos
-
-Na aba **"Admin API scopes"**, marque:
-- ✅ `write_products`
-- ✅ `write_product_listings`
-- ✅ `write_inventory`
-- ✅ `write_collections`
-- ✅ `write_metafield_definitions`
-- ✅ `write_metafields`
-
-Clique em **"Save"**.
-
----
-
-### 5️⃣ Instalar e Copiar Token
-
-1. Clique em **"Install app"**
-2. Na aba **"API credentials"** ou **"API Keys"**
-3. Procure por **"Admin API access token"**
-4. Clique em **"Reveal"** e **copie** (começa com `shpat_`)
+1. Vá para aba **"Credenciais da API"**
+2. Procure por **"Token de acesso da API Admin"**
+3. Clique em **"Revelar token"**
+4. **Copie o token** (começa com `shpat_`)
 
 ```javascript
 // Configure no script:
@@ -78,90 +69,74 @@ const ADMIN_TOKEN = "shpat_XXXXXXXXXXXXX";
 
 ---
 
-## 🔐 Opção B: OAuth + Credentials Flow (NOVO)
+## 📋 Opção B: Custom App NOVO (Pós-Janeiro 2026)
 
-✅ **SE** você criou no Dev Dashboard, use este fluxo.
+## 📋 Opção B: Custom App NOVO (Pós-Janeiro 2026)
 
-### 1️⃣ Obter Client ID e Client Secret
+✅ **APLICA SE:** Você criou a app após janeiro 2026
 
-```
-https://qdt02k-t4.admin.shopify.com/settings/apps-and-integrations/develop-apps
-```
+**Fluxo oficial Shopify 2026:**
+1. Acessar Dev Dashboard (dev.shopify.com)
+2. Obter Client ID + Client Secret
+3. Gerar token programaticamente via OAuth (Client Credentials Flow)
+4. Usar o token gerado no script
 
-Clique na sua app "Bootcamp Setup":
+⚠️ **Importante:** O token **não fica visível para copiar diretamente no admin** — precisa ser gerado via API.
 
-1. Vá para **"Configuration"**
-2. Procure por **"Admin API credentials"** (não "access token")
-3. Você vai ver:
-   - **Client ID:** `xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`
-   - **Client Secret:** `xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`
+### Método 1️⃣: Usar Shopify CLI (RECOMENDADO)
 
-📋 **Copie os dois valores!**
-
----
-
-### 2️⃣ Instalar a App
-
-1. Clique em **"Install app"**
-2. Autorize os escopos (mesmos de antes)
-
----
-
-### 3️⃣ Gerar Access Token Offline
-
-Agora você precisa gerar um **access token** programaticamente.
-
-**Instale o Shopify CLI (mais fácil):**
+Mais fácil, automático:
 
 ```bash
-# No seu computador/WSL
 npm install -g @shopify/cli @shopify/theme
 
-# Gere um token
-shopify app generate-credentials
+shopify app generate-credentials --shop qdt02k-t4.myshopify.com
+```
 
-# Ou via cURL (mais manual):
+O CLI vai:
+1. Abrir navegador (autorizar)
+2. Gerar token automaticamente
+3. Mostrar o token no terminal
+
+Copie o token (começa com `shpat_`)
+
+### Método 2️⃣: Manual via cURL
+
+Se preferir fazer manualmente:
+
+#### Passo 1: Obter Client ID + Client Secret
+
+1. Acesse: https://dev.shopify.com
+2. Selecione sua app "Bootcamp Setup"
+3. Vá em **Settings** → **Credentials**
+4. Copie:
+   - **Client ID**
+   - **Client Secret**
+
+#### Passo 2: Gerar Token
+
+```bash
 curl -X POST https://qdt02k-t4.myshopify.com/admin/oauth/access_token \
   -H "Content-Type: application/json" \
   -d '{
     "client_id": "SEU_CLIENT_ID",
     "client_secret": "SEU_CLIENT_SECRET",
     "grant_type": "client_credentials",
-    "scope": "write_products,write_collections,write_metafields"
+    "scope": "write_products,write_product_listings,write_inventory,write_collections,write_metafield_definitions,write_metafields"
   }'
 ```
 
-Você vai receber um JSON com o **access_token** (novo formato, ainda começa com `shpat_` ou similar).
-
----
-
-### 4️⃣ Configurar no Script
-
-```javascript
-// Use o token que recebeu
-const ADMIN_TOKEN = "shpat_NOVO_TOKEN_AQUI";
+**Resposta esperada:**
+```json
+{
+  "access_token": "shpat_XXXXXXXXXXXXXXXXXXXX",
+  "scope": "write_products,write_product_listings,..."
+}
 ```
 
+Copie o `access_token`
+
 ---
-
-## ⚡ Solução Rápida (Recomendada)
-
-Se não conseguir nada acima, use **Shopify CLI** (automático):
-
-```bash
-# Instalar
-npm install -g @shopify/cli
-
-# Na pasta do seu projeto
-cd /home/igors/projects/bootcamp-2026/scripts
-
-# Gera credenciais automaticamente
-shopify app generate-credentials
-
-# Mostra o token direto no terminal
-```
-
-Copie o token para o script.
 
 ---
 
@@ -170,26 +145,47 @@ Copie o token para o script.
 **Você pode encontrar estas chaves, MAS NÃO são o que precisamos:**
 
 ❌ **"Default API Key"** (Chaves de API legada)
-- Aparece em: Settings → Custom data → **API keys**
-- Formato: `d461508c3144e33b8fbebaf3e5618164` (apenas números/letras)
-- ❌ NÃO FUNCIONA com o script
+- Aparece em: Settings → Custom data → API keys
+- Formato: `d461508c3144e33b8fbebaf3e5618164`
+- ❌ NÃO FUNCIONA
 
-✅ **Admin API Access Token** (Isso sim!)
-- Aparece em: Develop apps → Configuration → **API credentials**
+❌ **Webhook Secret** (Webhook config)
+- Formato: `shpss_...` (começa com `shpss_`)
+- ❌ NÃO FUNCIONA
+
+✅ **Admin API Access Token** (ESSA SIM!)
 - Formato: `shpat_...` (começa com `shpat_`)
 - ✅ FUNCIONA com o script
 
+**Fonte:** Documentação oficial Shopify, abril 2026
+
 ---
 
-## ✅ Testar Configuração
+## ✅ Resumo Prático
+
+| Cenário | Solução |
+|---------|---------|
+| **App criada antes de Jan 2026** | Opção A: Copiar token do admin |
+| **App criada depois de Jan 2026** | Opção B: Gerar via Shopify CLI ou cURL |
+| **Sem certeza** | Use nosso `shopify-token-wizard.sh` (automático) |
+
+---
+
+## 🚀 Próximo Passo
+
+Após obter o token (qualquer método):
 
 ```bash
 cd /home/igors/projects/bootcamp-2026/scripts
 
-# Editar com seu token (DEVE começar com shpat_)
-nano setup_shopify.js
+# Opção 1: Usar nosso wizard (RECOMENDADO)
+./shopify-token-wizard.sh
 
-# Executar
+# Opção 2: Configurar manualmente
+nano setup_shopify.js
+# Altere: const ADMIN_TOKEN = "shpat_SEU_TOKEN_AQUI";
+
+# Depois executar
 node setup_shopify.js
 ```
 
@@ -198,7 +194,16 @@ node setup_shopify.js
 🛍️  Criando produtos...
    ✅ Camiseta Bootcamp 2026
    ✅ Caneca Developer
-   ...
+   ✅ Mochila Tech
+   ✅ Kit Adesivos Dev
+   ✅ Curso Online Adobe Commerce
+
+📁 Criando coleções...
+   ✅ Destaques
+   ✅ Vestuário
+   ✅ Acessórios
+   ✅ Digital
+
 ✅ SETUP SHOPIFY CONCLUÍDO!
 ```
 
@@ -209,25 +214,23 @@ node setup_shopify.js
 | Erro | Causa | Solução |
 |------|-------|---------|
 | `401 Unauthorized` | Token inválido/expirado | Gere um novo token |
-| `Invalid Client Credentials` | Client ID/Secret incorreto | Copie novamente de Configuration |
-| `fetch is not defined` | Node.js antigo | Instale Node 18+: `nvm install 18` |
-| Sem botão "Reveal" | Novo modelo (Opção B) | Use OAuth flow acima |
+| `Invalid Client Credentials` | Client ID/Secret errado | Copie novamente |
+| `fetch is not defined` | Node antigo | Instale Node 18+: `nvm install 18` |
 | `ECONNREFUSED` | Sem internet | Verifique conexão |
+| "Não vejo botão Reveal" | App nova (pós-Jan 2026) | Use Opção B (CLI/cURL) |
 
 ---
 
 ## 📍 Links Úteis
 
 - **Shopify Admin:** https://qdt02k-t4.admin.shopify.com
-- **Develop Apps:** https://qdt02k-t4.admin.shopify.com/settings/apps-and-integrations/develop-apps
-- **Shopify API Docs:** https://shopify.dev/docs/api/admin-rest
+- **Dev Dashboard:** https://dev.shopify.com
+- **API Docs:** https://shopify.dev/docs/api/admin-rest
 - **CLI Docs:** https://shopify.dev/docs/apps/tools/cli
+- **Help Shopify:** https://help.shopify.com
 
 ---
 
-**⏰ Resumo:**
-1. Tentar **Opção A** (mais fácil)
-2. Se não funcionar, usar **Opção B** (OAuth)
-3. Se ainda não conseguir, usar **Shopify CLI** (automático)
+🔐 **Seu token é sensível — nunca compartilhe nem commite no git!**
 
-🚀 **Uma vez com o token, execute `node setup_shopify.js` e pronto!**
+

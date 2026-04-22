@@ -4,31 +4,44 @@
  * SCRIPT DE SETUP - SHOPIFY - BOOTCAMP 2026
  * Cria produtos e coleções automaticamente
  * 
- * IMPORTANTE: Precisa do Admin API Token (começa com shpat_)
- * NÃO use: Webhook Secret, Default API Key, ou outras chaves!
+ * ⚠️ IMPORTANTE - Admin API Token (2026)
  * 
- * Como gerar (2 opções):
+ * Fonte: https://help.shopify.com (Documentação oficial Shopify 2026)
  * 
- * OPÇÃO A (LEGACY - Custom Apps):
- * 1. Settings > Apps and sales channels > Develop apps
- * 2. Create custom app > Nome: "Bootcamp Setup"
- * 3. Configuration > Admin API scopes (marque 6 escopos)
- * 4. Install app > API credentials > Reveal token > Copiar aqui
+ * A partir de janeiro de 2026, novos apps personalizados são criados no 
+ * Dev Dashboard (dev.shopify.com), não mais direto no admin.
  * 
- * OPÇÃO B (NOVO - OAuth 2026):
- * 1. Develop apps > Create an app
- * 2. Configuration > Admin API credentials > Copiar Client ID + Secret
- * 3. Usar Shopify CLI: shopify app generate-credentials
- * 4. Usar o access_token gerado (começa com shpat_)
+ * O token Admin API (shpat_...) precisa ser gerado via OAuth, não copiado 
+ * de um botão "Reveal" (esse fluxo ainda funciona só para apps pré-2026).
+ * 
+ * TRÊS OPÇÕES PARA GERAR TOKEN:
+ * 
+ * 1️⃣ APP PRÉ-JANEIRO 2026:
+ *    Admin → Develop apps → [Sua app] → API credentials → Reveal token
+ *    Cole o token (shpat_...)
+ * 
+ * 2️⃣ APP NOVA (PÓS-JANEIRO 2026) - OPÇÃO CLI:
+ *    npm install -g @shopify/cli
+ *    shopify app generate-credentials --shop qdt02k-t4.myshopify.com
+ * 
+ * 3️⃣ APP NOVA (PÓS-JANEIRO 2026) - OPÇÃO MANUAL:
+ *    curl -X POST https://qdt02k-t4.myshopify.com/admin/oauth/access_token \
+ *      -H "Content-Type: application/json" \
+ *      -d '{"client_id":"...","client_secret":"...","grant_type":"client_credentials",...}'
+ * 
+ * ❌ NÃO USE: Default API Key, Webhook Secret, ou outras chaves
+ * ✅ DEVE COMEÇAR COM: shpat_
  * 
  * Ver: scripts/SHOPIFY-TOKEN-GUIDE.md para instruções completas
+ * Ver: scripts/shopify-token-wizard.sh para geração automática
  */
 
 // ─── CONFIGURAÇÕES ────────────────────────────────────────
-// ⚠️ ALTERE ESSES VALORES
+// ⚠️ ALTERE ESSES VALORES COM SEU TOKEN E DOMÍNIO
 const SHOP_DOMAIN = "sua-loja.myshopify.com";
 const ADMIN_TOKEN = "shpat_SEU_ADMIN_API_TOKEN_AQUI";
-// ⚠️ O token DEVE começar com "shpat_" (não use API Key legada!)
+// ⚠️ Token DEVE começar com "shpat_"
+// ❌ NÃO use: API Key legada, Webhook Secret, ou outras credenciais
 
 const API_VERSION = "2024-01";
 const BASE_URL = `https://${SHOP_DOMAIN}/admin/api/${API_VERSION}`;

@@ -3,13 +3,21 @@
 ##############################################################################
 # SCRIPT: shopify-token-wizard.sh
 # 
-# Objetivo: Assistente interativo para gerar Admin API Token Shopify (2026)
+# Objetivo: Assistente interativo para gerar Admin API Token Shopify 2026
+# 
+# Baseado em: Documentação oficial Shopify
+# https://help.shopify.com
+# 
+# Mudanças em janeiro 2026:
+# - Apps ANTIGAS: Token estático ainda disponível (Opção A)
+# - Apps NOVAS: Token gerado via OAuth / Client Credentials (Opção B)
+# 
+# Este script detecta e executa automaticamente o método correto.
 # 
 # Como usar:
 #   chmod +x shopify-token-wizard.sh
 #   ./shopify-token-wizard.sh
 #
-# Este script detecta qual método usar baseado no que está disponível
 ##############################################################################
 
 set -e
