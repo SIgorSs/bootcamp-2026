@@ -37,11 +37,29 @@
  */
 
 // ─── CONFIGURAÇÕES ────────────────────────────────────────
-// ⚠️ ALTERE ESSES VALORES COM SEU TOKEN E DOMÍNIO
-const SHOP_DOMAIN = "sua-loja.myshopify.com";
-const ADMIN_TOKEN = "shpat_SEU_ADMIN_API_TOKEN_AQUI";
-// ⚠️ Token DEVE começar com "shpat_"
-// ❌ NÃO use: API Key legada, Webhook Secret, ou outras credenciais
+// ⚠️ CONFIGURE VIA VARIÁVEIS DE AMBIENTE (seguro)
+// 
+// Método: Variáveis de ambiente (RECOMENDADO)
+//   export SHOPIFY_DOMAIN="qdt02k-t4.myshopify.com"
+//   export SHOPIFY_TOKEN="shpat_seu_token_aqui"
+//   node setup_shopify.js
+//
+const SHOP_DOMAIN = process.env.SHOPIFY_DOMAIN || "sua-loja.myshopify.com";
+const ADMIN_TOKEN = process.env.SHOPIFY_TOKEN || "shpat_SEU_ADMIN_API_TOKEN_AQUI";
+
+// Validação
+if (SHOP_DOMAIN === "sua-loja.myshopify.com" || ADMIN_TOKEN === "shpat_SEU_ADMIN_API_TOKEN_AQUI") {
+  console.error("❌ ERRO: SHOP_DOMAIN ou ADMIN_TOKEN não configurados!");
+  console.error("");
+  console.error("Use variáveis de ambiente:");
+  console.error("  export SHOPIFY_DOMAIN='qdt02k-t4.myshopify.com'");
+  console.error("  export SHOPIFY_TOKEN='shpat_seu_token'");
+  console.error("  node setup_shopify.js");
+  console.error("");
+  console.error("Ou execute o wizard:");
+  console.error("  ./shopify-token-wizard.sh");
+  process.exit(1);
+}
 
 const API_VERSION = "2024-01";
 const BASE_URL = `https://${SHOP_DOMAIN}/admin/api/${API_VERSION}`;
